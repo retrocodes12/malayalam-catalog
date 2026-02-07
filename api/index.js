@@ -7,6 +7,9 @@ const { getCatalog, getMeta } = require('../src/handlers');
 function sendJson(res, status, payload) {
   res.statusCode = status;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', '*');
   res.end(JSON.stringify(payload));
 }
 
@@ -19,6 +22,14 @@ function parseExtraParams(url) {
 }
 
 module.exports = async (req, res) => {
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204;
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    return res.end();
+  }
+
   const originalUrl = req.headers['x-vercel-original-url'] || req.url;
   const url = new URL(originalUrl, 'http://localhost');
   const path = url.pathname;
