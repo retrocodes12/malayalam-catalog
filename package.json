@@ -1,0 +1,11 @@
+{
+  "name": "malayalam-catalog-addon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Stremio addon for a Malayalam catalog",
+  "main": "api/index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node ./server.js"
+  }
+}
