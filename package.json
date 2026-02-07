@@ -5,6 +5,9 @@
   "description": "Stremio addon for a Malayalam catalog",
   "main": "api/index.js",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "node ./server.js"
   }
