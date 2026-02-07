@@ -1,5 +1,6 @@
 'use strict';
 
+const https = require('https');
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 const IMAGE_BASE = 'https://image.tmdb.org/t/p';
 
@@ -28,6 +29,29 @@ function cacheSet(key, value) {
   cache.set(key, { value, timestamp: Date.now() });
 }
 
+function httpsGetJson(url) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (res) => {
+        let raw = '';
+        res.on('data', (chunk) => {
+          raw += chunk;
+        });
+        res.on('end', () => {
+          if (res.statusCode && res.statusCode >= 400) {
+            return reject(new Error(`TMDB error ${res.statusCode}: ${raw}`));
+          }
+          try {
+            resolve(JSON.parse(raw));
+          } catch (err) {
+            reject(err);
+          }
+        });
+      })
+      .on('error', reject);
+  });
+}
+
 async function tmdbFetch(path, params = {}) {
   const key = getApiKey();
   const url = new URL(`${TMDB_BASE}${path}`);
@@ -41,12 +65,7 @@ async function tmdbFetch(path, params = {}) {
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
 
-  const response = await fetch(url);
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`TMDB error ${response.status}: ${body}`);
-  }
-  const data = await response.json();
+  const data = await httpsGetJson(url);
   cacheSet(cacheKey, data);
   return data;
 }
